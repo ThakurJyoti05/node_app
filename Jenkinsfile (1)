@@ -1,0 +1,34 @@
+    pipeline {
+        agent any
+        stages {
+            stage('SCM') {
+                steps {
+                    git branch: 'main', url: 'https://github.com/shivendra-pratap-compunnel/node_app.git'
+                }
+            }
+            stage('cloning and configuring nginx') {
+                steps {
+                        // SCP index.html to production
+                    withCredentials([sshUserPrivateKey(credentialsId: 'node_ec2_key', keyFileVariable: 'key_file')]){
+                        // some block
+                        sh """
+                            ssh -i ${key_file} -o StrictHostKeyChecking=no ubuntu@54.237.206.177
+                            scp -i ${key_file} -r myapp/ ubuntu@54.237.206.177:~/
+                            ssh -i ${key_file} \
+                            ubuntu@ec2-54-237-206-177.compute-1.amazonaws.com "
+                            cd ~/myapp
+                            sudo npm install -y
+                            pm2 start app.js --name hlo
+                            sudo systemctl start nginx"
+                        """
+                    }
+                }
+            }
+        }
+
+        post {
+            always {
+                cleanWs()
+            }
+        }
+    }
