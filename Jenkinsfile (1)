@@ -3,7 +3,7 @@
         stages {
             stage('SCM') {
                 steps {
-                    git branch: 'main', url: 'https://github.com/shivendra-pratap-compunnel/node_app.git'
+                    git branch: 'main', url: 'https://github.com/ThakurJyoti05/node_app.git'
                 }
             }
             stage('cloning and configuring nginx') {
